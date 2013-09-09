@@ -2,9 +2,10 @@ import java.lang.Thread;
 import java.util.ArrayList;
 
 class StrandTesterThread extends Thread {
-    final String compQuery;
-    final String query;
-    final String strand;
+    private final String compQuery;
+    private final String query;
+    private final String strand;
+    private String result;
 
     StrandTesterThread(
             String compQuery,
@@ -44,7 +45,11 @@ class StrandTesterThread extends Thread {
                             curStrand.substring(i + compQuery.length(), curStrand.length());
             }
 
-            System.out.println(curStrand);
+            result = curStrand;
         }
+    }
+
+    public String getResult() {
+        return result;
     }
 }

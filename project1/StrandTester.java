@@ -1,6 +1,7 @@
 import java.io.*;
 import java.lang.StringBuilder;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 
 class StrandTester {
@@ -30,12 +31,25 @@ class StrandTester {
      * Each strand is run on its own thread.
      */
     public void printMatchingStrands() {
+        LinkedList<StrandTesterThread> threads = new LinkedList<StrandTesterThread>();
         // For each strand, start a StrandTesterThread that checks if the strand
         // matches the given query.
         for (String strand : inputStrands) {
             StrandTesterThread strandTesterThread =
                 new StrandTesterThread(compQuery, query, strand);
             strandTesterThread.start();
+            threads.add(strandTesterThread);
+        }
+
+        for (StrandTesterThread thread : threads) {
+            try {
+                thread.join();
+                if (thread.getResult() != null) {
+                    System.out.println(thread.getResult());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
