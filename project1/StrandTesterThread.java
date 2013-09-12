@@ -67,9 +67,10 @@ class StrandTesterThread extends Thread {
 
             // Capitalize the substrings that match the query.
             for (int i : queryIndices) {
-                curStrand = curStrand.substring(0, i) +
-                            curStrand.substring(i, i + compQuery.length()).toUpperCase() +
-                            curStrand.substring(i + compQuery.length(), curStrand.length());
+                curStrand = 
+                    curStrand.substring(0, i) +
+                    curStrand.substring(i, i + compQuery.length()).toUpperCase() +
+                    curStrand.substring(i + compQuery.length(), curStrand.length());
             }
 
             result = curStrand;

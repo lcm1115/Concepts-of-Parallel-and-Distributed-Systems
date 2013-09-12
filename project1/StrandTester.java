@@ -55,7 +55,8 @@ class StrandTester {
      * Each strand is run on its own thread.
      */
     public void printMatchingStrands() {
-        LinkedList<StrandTesterThread> threads = new LinkedList<StrandTesterThread>();
+        LinkedList<StrandTesterThread> threads =
+            new LinkedList<StrandTesterThread>();
 
         // For each strand, start a StrandTesterThread that checks if the strand
         // matches the given query.
@@ -103,7 +104,8 @@ class StrandTester {
                     break;
                 default:
                     compBuilder.append(query.charAt(i));
-                    System.err.println("ERROR: No complement found for letter " + query.charAt(i));
+                    System.err.println("ERROR: No complement found for letter "
+                                       + query.charAt(i));
             }
         }
         return compBuilder.reverse().toString();
