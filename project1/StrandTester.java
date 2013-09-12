@@ -55,27 +55,33 @@ class StrandTester {
      * Each strand is run on its own thread.
      */
     public void printMatchingStrands() {
-        LinkedList<StrandTesterThread> threads =
-            new LinkedList<StrandTesterThread>();
+        // If query was not initialized or if it contained an invalid character
+        // (indicated by compQuery being null), do nothing.
+        if (this.query == null || this.compQuery == null) {
+            System.err.println("Invalid query specified.");
+        } else {
+            LinkedList<StrandTesterThread> threads =
+                new LinkedList<StrandTesterThread>();
 
-        // For each strand, start a StrandTesterThread that checks if the strand
-        // matches the given query.
-        for (String strand : inputStrands) {
-            StrandTesterThread strandTesterThread =
-                new StrandTesterThread(compQuery, query, strand);
-            strandTesterThread.start();
-            threads.add(strandTesterThread);
-        }
+            // For each strand, start a StrandTesterThread that checks if the strand
+            // matches the given query.
+            for (String strand : inputStrands) {
+                StrandTesterThread strandTesterThread =
+                    new StrandTesterThread(compQuery, query, strand);
+                strandTesterThread.start();
+                threads.add(strandTesterThread);
+            }
 
-        // Join all threads and if there was a matching result, print it out.
-        for (StrandTesterThread thread : threads) {
-            try {
-                thread.join();
-                if (thread.getResult() != null) {
-                    System.out.println(thread.getResult());
+            // Join all threads and if there was a matching result, print it out.
+            for (StrandTesterThread thread : threads) {
+                try {
+                    thread.join();
+                    if (thread.getResult() != null) {
+                        System.out.println(thread.getResult());
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -103,9 +109,9 @@ class StrandTester {
                     compBuilder.append('A');
                     break;
                 default:
-                    compBuilder.append(query.charAt(i));
                     System.err.println("ERROR: No complement found for letter "
                                        + query.charAt(i));
+                    return null;
             }
         }
         return compBuilder.reverse().toString();

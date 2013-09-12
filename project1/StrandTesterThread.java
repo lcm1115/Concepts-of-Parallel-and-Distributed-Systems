@@ -41,15 +41,16 @@ class StrandTesterThread extends Thread {
     public void run() {
         // Test if either query or reverse complement of query matches input
         // strand.
-        if (strand.contains(query) || strand.contains(compQuery)) {
+        String[] toks = strand.split(" ");
+        String sequence = toks[0] + " ";
+        String curStrand = toks[1];
+        if (curStrand.contains(query) || curStrand.contains(compQuery)) {
             // If the given strand matches the query, find the indices in which
             // the query is found.
-            String[] toks = strand.split(" ");
-            String curStrand = toks[0] + " " + toks[1].toLowerCase();
             ArrayList<Integer> queryIndices = new ArrayList<Integer>();
             int curIndex = 0;
             while (curIndex != -1) {
-                curIndex = strand.indexOf(query, curIndex);
+                curIndex = curStrand.indexOf(query, curIndex);
                 if (curIndex != -1) {
                     queryIndices.add(curIndex);
                     ++curIndex;
@@ -58,12 +59,14 @@ class StrandTesterThread extends Thread {
             
             curIndex = 0;
             while (curIndex != -1) {
-                curIndex = strand.indexOf(compQuery, curIndex);
+                curIndex = curStrand.indexOf(compQuery, curIndex);
                 if (curIndex != -1) {
                     queryIndices.add(curIndex);
                     ++curIndex;
                 }
             }
+
+            curStrand = curStrand.toLowerCase();
 
             // Capitalize the substrings that match the query.
             for (int i : queryIndices) {
@@ -73,7 +76,7 @@ class StrandTesterThread extends Thread {
                     curStrand.substring(i + compQuery.length(), curStrand.length());
             }
 
-            result = curStrand;
+            result = sequence + curStrand;
         }
     }
 
