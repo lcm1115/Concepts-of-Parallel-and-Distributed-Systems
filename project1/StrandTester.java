@@ -60,28 +60,11 @@ class StrandTester {
         if (this.query == null || this.compQuery == null) {
             System.err.println("Invalid query specified.");
         } else {
-            LinkedList<StrandTesterThread> threads =
-                new LinkedList<StrandTesterThread>();
-
-            // For each strand, start a StrandTesterThread that checks if the strand
-            // matches the given query.
-            for (String strand : inputStrands) {
-                StrandTesterThread strandTesterThread =
-                    new StrandTesterThread(compQuery, query, strand);
-                strandTesterThread.start();
-                threads.add(strandTesterThread);
-            }
-
-            // Join all threads and if there was a matching result, print it out.
-            for (StrandTesterThread thread : threads) {
-                try {
-                    thread.join();
-                    if (thread.getResult() != null) {
-                        System.out.println(thread.getResult());
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            // For each strand, start a StrandTesterThread that checks if the
+            // strand matches the given query.
+            for (int i = 0; i < inputStrands.size(); ++i) {
+                new StrandTesterThread(compQuery, query, inputStrands.get(i), i)
+                    .start();
             }
         }
     }
