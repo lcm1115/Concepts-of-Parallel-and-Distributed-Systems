@@ -57,7 +57,7 @@ class StrandTester {
     public void printMatchingStrands() {
         // If query was not initialized or if it contained an invalid character
         // (indicated by compQuery being null), do nothing.
-        if (this.query == null || this.compQuery == null) {
+        if (query == null || compQuery == null) {
             System.err.println("Invalid query specified.");
         } else {
             // For each strand, start a StrandTesterThread that checks if the
