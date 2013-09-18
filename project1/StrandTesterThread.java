@@ -93,12 +93,27 @@ class StrandTesterThread extends Thread {
             // Wait for previous thread to print, then print results.
             result = sequence + curStrand;
         }
-        while (printOrder > lastPrint.get());
-        if (result != null) {
-            synchronized (System.out) {
+
+        // Check if it is this thread's turn to print. If not, block until it
+        // is its turn to print, and then print.
+        synchronized(lastPrint) {
+            // Wait for thread's turn.
+            while (printOrder > lastPrint.get()) {
+                try {
+                    lastPrint.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // If there is something to print, print it.
+            if (result != null) {
                 System.out.println(result);
             }
+
+            // Increment counter and notify sleeping threads.
+            lastPrint.incrementAndGet();
+            lastPrint.notifyAll();
         }
-        lastPrint.incrementAndGet();
     }
 }
