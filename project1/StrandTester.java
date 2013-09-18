@@ -1,8 +1,11 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.StringBuilder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class contains methods for testing if a given set of DNA strands
@@ -15,10 +18,12 @@ class StrandTester {
      * Reverse complement of the query to search.
      */
     private final String compQuery;
+
     /**
      * Given query to search.
      */
     private final String query;
+
     /**
      * List of strands read in from input file.
      */
@@ -60,10 +65,12 @@ class StrandTester {
         if (query == null || compQuery == null) {
             System.err.println("Invalid query specified.");
         } else {
+            AtomicInteger lastPrint = new AtomicInteger(0);
             // For each strand, start a StrandTesterThread that checks if the
             // strand matches the given query.
             for (int i = 0; i < inputStrands.size(); ++i) {
-                new StrandTesterThread(compQuery, query, inputStrands.get(i), i)
+                new StrandTesterThread(
+                        compQuery, query, inputStrands.get(i), i, lastPrint)
                     .start();
             }
         }

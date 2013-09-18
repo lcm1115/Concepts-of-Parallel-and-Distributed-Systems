@@ -12,19 +12,21 @@ class StrandTesterThread extends Thread {
      * Reverse complement of the query to search.
      */
     private final String compQuery;
+
     /**
      * Given query to search.
      */
     private final String query;
+
     /**
      * Given strand to test against.
      */
     private final String strand;
 
     /**
-     * Shared integer to synchronized printing.
+     * Shared AtomicInteger to synchronized printing.
      */
-    private static AtomicInteger lastPrint = new AtomicInteger(0);
+    private AtomicInteger lastPrint;
 
     /**
      * Indicates print order of this thread, printing will not happen until
@@ -42,11 +44,13 @@ class StrandTesterThread extends Thread {
     StrandTesterThread(String compQuery,
                        String query,
                        String strand,
-                       int printOrder) {
+                       int printOrder,
+                       AtomicInteger lastPrint) {
         this.compQuery = compQuery;
         this.query = query;
         this.strand = strand;
         this.printOrder = printOrder;
+        this.lastPrint = lastPrint;
     }
 
     public void run() {
