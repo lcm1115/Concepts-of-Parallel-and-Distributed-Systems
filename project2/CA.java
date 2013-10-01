@@ -1,18 +1,8 @@
 import edu.rit.pj2.Loop;
 import edu.rit.pj2.Task;
-import java.lang.StringBuilder;
-import java.util.Arrays;
 
 public class CA extends Task {
-    private int[] nextCells;
-    private int[] currentCells;
-    private int[] update;
-    private int finalPop;
-    private int largestPop;
-    private int largestPopGen;
-    private int smallestPopGen;
-    private int smallestPop;
-    
+    private CellArray ca;
     public void main(String[] args) {
         if (args.length < 4) {
             System.err.println("usage: java CA <rule> <N> <S> <index> ...");
@@ -25,78 +15,49 @@ public class CA extends Task {
         } else if (Integer.parseInt(args[2]) <= 0) {
             System.err.println("error - S must be greater than zero");
         } else {
+            int largestPop, smallestPop, largestPopGen, smallestPopGen, finalPop;
+            largestPop = smallestPop = largestPopGen = smallestPopGen = finalPop = 0;
             // Get update rule.
-            update = new int[8];
+            int[] update = new int[8];
             for (int i = 0; i < args[0].length(); ++i) {
                 update[i] = Character.getNumericValue(args[0].charAt(i));
             }
 
             // Construct initial cell arrays.
-            currentCells = new int[Integer.parseInt(args[1])];
-            nextCells = new int[Integer.parseInt(args[1])];
+            int[] currentCells = new int[Integer.parseInt(args[1])];
             for (int i = 3; i < args.length; ++i) {
                 currentCells[Integer.parseInt(args[i])] = 1;
             }
+
+            ca = new CellArray(update, currentCells);
+            largestPop = smallestPop = ca.getPopulation();
             
             int steps = Integer.parseInt(args[2]);
-            largestPop = countLive();
-            smallestPop = countLive();
+            for (int i = 0; i < steps; ++i) {
+                parallelFor(0, currentCells.length - 1).exec(new Loop() {
+                    public void run(int i) {
+                        int nextValue = ca.getNextValue(i);
+                        synchronized (ca) {
+                            ca.setIndex(i, nextValue);
+                        }
+                    }
+                });
+                ca.swapArrays();
+                int pop = ca.getPopulation();
+                if (pop > largestPop) {
+                    largestPop = pop;
+                    largestPopGen = i + 1;
+                } else if (pop < smallestPop) {
+                    smallestPop = pop;
+                    smallestPopGen = i + 1;
+                }
+            }
 
-            runGenerations(steps);
+            finalPop = ca.getPopulation();
+
             System.out.println("Smallest popcount: " + smallestPop + " at step " + smallestPopGen);
             System.out.println("Largest popcount: " + largestPop + " at step " + largestPopGen);
             System.out.println("Final popcount: " + finalPop + " at step " + steps);
         }
-    }
-
-    int countLive() {
-        int count = 0;
-        for (int i : currentCells) {
-            count += i;
-        }
-        return count;
-    }
-
-    void runGenerations(int steps) {
-        for (int i = 0; i < steps; ++i) {
-            int numLive = countLive();
-            if (numLive > largestPop) {
-                largestPop = numLive;
-                largestPopGen = i;
-            }
-
-            if (numLive < smallestPop) {
-                smallestPop = numLive;
-                smallestPopGen = i;
-            }
-
-            parallelFor(0, currentCells.length - 1).exec(new Loop() {
-                public void run(int i) {
-                    synchronized(nextCells) {
-                        nextCells[i] = getNextValue(i);
-                    }
-                }
-            });
-            int[] temp = currentCells;
-            currentCells = nextCells;
-            nextCells = temp;
-        }
-        finalPop = countLive();
-    }
-
-    void printGeneration(int gen, int numLive) {
-        System.out.print(gen + "\t");
-        for (int i = 0; i < currentCells.length; ++i) {
-            System.out.print(currentCells[i]);
-        }
-        System.out.print("\t" + numLive + "\n");
-    }
-
-    int getNextValue(int index) {
-        int left = currentCells[(index - 1 + currentCells.length) % currentCells.length];
-        int center = currentCells[index];
-        int right = currentCells[(index + 1) % currentCells.length];
-        int updateIndex = (left << 2) + (center << 1) + right;
-        return update[updateIndex];
     }
 }
