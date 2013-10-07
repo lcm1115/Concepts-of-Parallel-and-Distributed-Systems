@@ -56,7 +56,12 @@ public class CA extends Task {
             // Construct initial cell array.
             int[] currentCells = new int[Integer.parseInt(args[1])];
             for (int i = 3; i < args.length; ++i) {
-                currentCells[Integer.parseInt(args[i])] = 1;
+                int cellIndex = Integer.parseInt(args[i]);
+                if (cellIndex > currentCells.length) {
+                    System.err.println("error - initial live cell index larger than array size");
+                    System.exit(1);
+                }
+                currentCells[cellIndex] = 1;
             }
 
             ca = new CellArray(update, currentCells);
