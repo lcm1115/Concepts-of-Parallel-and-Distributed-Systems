@@ -61,7 +61,6 @@ public class ShutTheBoxModel implements ViewListener {
         } else {
             sendMessage("tile " + (i + 1) + " down");
         }
-        modelListener.setTile(i + 1, tiles[i]);
     }
 
     public void quit() {
