@@ -1,10 +1,8 @@
 import java.awt.event.ActionEvent;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class ShutTheBox {
-    private ShutTheBoxModel model;
-    private ShutTheBoxUI ui;
-
     public static void main(String[] args) throws Exception {
         if (args.length < 3) {
             System.err.println(
@@ -12,20 +10,16 @@ public class ShutTheBox {
         } else {
             String host = args[0];
             int port = Integer.parseInt(args[1]);
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress(host, port));
             String name = args[2];
-            ShutTheBox stb = new ShutTheBox(host, port, name);
-        }
-    }
-
-    public ShutTheBox(String host, int port, String name) {
-        try {
-            model = new ShutTheBoxModel(new Socket(host, port), name);
-            ui = new ShutTheBoxUI();
-            model.setModelListener(ui);
-            ui.setViewListener(model);
-            model.start();
-        } catch (Exception e) {
-            e.printStackTrace();
+            ShutTheBoxModelClone model = new ShutTheBoxModelClone();
+            ShutTheBoxUI view = new ShutTheBoxUI();
+            ShutTheBoxModelProxy proxy = new ShutTheBoxModelProxy(socket, name);
+            model.setModelListener(view);
+            view.setViewListener(proxy);
+            proxy.setModelClone(model);
+            proxy.start();
         }
     }
 }
