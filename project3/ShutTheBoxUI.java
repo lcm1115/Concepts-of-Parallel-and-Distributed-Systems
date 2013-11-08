@@ -17,7 +17,7 @@ import javax.swing.UIManager;
  *
  * @author  Alan Kaminsky
  * @author  Liam Morris
- * @version 14-Oct-2013
+ * @version 11-Oct-2013
  */
 public class ShutTheBoxUI extends JFrame implements ModelListener {
     static {
@@ -191,6 +191,9 @@ public class ShutTheBoxUI extends JFrame implements ModelListener {
         this.viewListener = viewListener;
     }
 
+    /**
+     * Quit UI.
+     */
     public void quit() {
         this.dispose();
     }
