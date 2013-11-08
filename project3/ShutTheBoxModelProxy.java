@@ -143,7 +143,6 @@ public class ShutTheBoxModelProxy implements ViewListener {
                 while (true) {
                     // Read line and split it into tokens.
                     String response = in.readLine();
-                    System.out.println(response);
                     String[] tokens = response.split(" ");
 
                     // Determine type of message.
@@ -208,8 +207,6 @@ public class ShutTheBoxModelProxy implements ViewListener {
                         modelClone.setMessage(scoreString(winner));
                     }
                 }
-
-                System.out.println("Done.");
             } catch (IOException e) {
             } finally {
                 try {
