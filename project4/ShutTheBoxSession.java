@@ -1,14 +1,52 @@
 import java.util.Random;
 
+/**
+ * Represents a session of a game of Shut The Box.
+ * Keeps all necessary state for each game.
+ *
+ * @author Liam Morris (lcm1115)
+ */
 public class ShutTheBoxSession {
+    /**
+     * State of tiles.
+     */
     private boolean[] tiles;
+
+    /**
+     * ID for this session.
+     */
     private int sessionID;
+
+    /**
+     * Scores of each player.
+     */
     private int[] scores;
+
+    /**
+     * Current turn.
+     */
     private int turn;
+
+    /**
+     * RNG for dice.
+     */
     private Random diceRoller;
+
+    /**
+     * Player names.
+     */
     private String[] players;
+
+    /**
+     * Clients connected to this session.
+     */
     private ViewProxy[] clients;
 
+    /**
+     * Constructor for ShutTheBoxSession.
+     *
+     * @param sessionID the ID of this session.
+     */
     public ShutTheBoxSession(int sessionID) {
         this.sessionID = sessionID;
         scores = new int[2];
@@ -21,6 +59,14 @@ public class ShutTheBoxSession {
         diceRoller = new Random();
     }
 
+    /**
+     * Add player to this session.
+     *
+     * @param ViewProxy the client connecting to this session
+     * @param playerName the name of the player connectong to this session
+     *
+     * @return the number of players connected to this session
+     */
     public synchronized int addPlayer(ViewProxy proxy, String playerName) {
         if (clients[0] == null) {
             clients[0] = proxy;
@@ -46,10 +92,18 @@ public class ShutTheBoxSession {
         return 0;
     }
 
+    /**
+     * Sets the state of a tile.
+     *
+     * @param playerTurn the turn of the player issuing the command
+     * @param tile the index of the tile being set
+     * @param up the state of the tile
+     */
     public synchronized void flipTile(
             int playerTurn, int tile, boolean up) {
+        // Check player turn.
         if (turn != playerTurn) {
-            System.out.println("Unexpected message");
+            System.out.println("Invalid player turn");
             return;
         }
 
@@ -63,9 +117,15 @@ public class ShutTheBoxSession {
                     new String[]{ Integer.toString(tile), status }));
     }
 
+    /**
+     * Rolls the dice.
+     *
+     * @param playerTurn the turn of the player issuing the command
+     */
     public synchronized void roll(int playerTurn) {
+        // Check player turn.
         if (turn != playerTurn) {
-            System.out.println("Unexpected message");
+            System.out.println("Invalid player turn");
             return;
         }
 
@@ -77,9 +137,15 @@ public class ShutTheBoxSession {
                     "dice", new String[]{ die1, die2 }));
     }
 
+    /**
+     * Lets server know that a player has finished a turn.
+     *
+     * @param playerTurn the turn of the player issuing the command
+     */
     public synchronized void done(int playerTurn) {
+        // Check player turn.
         if (turn != playerTurn) {
-            System.out.println("Unexpected message");
+            System.out.println("Invalid player turn");
             return;
         }
 
@@ -133,6 +199,9 @@ public class ShutTheBoxSession {
                     new String[]{ Integer.toString(turn) }));
     }
 
+    /**
+     * Close session and alert players.
+     */
     public void quit() {
         for (int i = 0; i < 2; ++i) {
             if (clients[i] != null) {
